@@ -1,10 +1,9 @@
 import { parse } from "node-html-parser";
 import { headers, NOT_FOUND_STR } from "@/constants";
+import { parseDate } from "chrono-node";
 
 // add missing key-values to indicate "hidden"
-function populate() {
-
-}
+function populate() {}
 
 export const runtime = "edge";
 
@@ -63,27 +62,33 @@ export async function GET(req: Request) {
 			const og_value = cells[1].rawText;
 
 			let key;
-			let value: string | number | undefined;
+			let value: string | number | undefined = og_value;
 
+			// TODO: add leaderboard positions
 			switch (og_cell) {
 				case "Characters":
 					key = "characters";
-					value = parseInt(og_value) ?? -1;
+					value = Number.parseInt(og_value) ?? -1;
 					break;
 				case "Skins":
 					key = "skins";
+					value = Number.parseInt(og_value) ?? -1;
 					break;
 				case "Exaltations":
 					key = "exaltations";
+					value = Number.parseInt(og_value.split(" ")[0]) ?? -1;
 					break;
 				case "Fame":
 					key = "fame";
+					value = Number.parseInt(og_value.split(" ")[0]) ?? -1;
 					break;
 				case "Rank":
 					key = "rank";
+					value = Number.parseInt(og_value) ?? -1;
 					break;
 				case "Account fame":
 					key = "account_fame";
+					value = Number.parseInt(og_value.split(" ")[0]) ?? -1;
 					break;
 				case "Guild":
 					key = "guild";
@@ -91,13 +96,17 @@ export async function GET(req: Request) {
 				case "Guild Rank":
 					key = "guild_rank";
 					break;
+				// TODO: decide if dates should be returned as a unix timestamp
 				case "Created":
 					key = "created_at";
+					value = parseDate(og_value)?.getTime() ?? -1;
 					break;
 				case "First seen":
 					key = "first_seen_at";
+					value = parseDate(og_value)?.getTime() ?? -1;
 				case "Last seen":
 					key = "last_seen_at";
+					value = parseDate(og_value)?.getTime() ?? -1;
 					break;
 				default:
 					key = og_cell;

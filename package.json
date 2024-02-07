@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "chrono-node": "^2.7.5",
     "next": "14.1.0",
     "node-html-parser": "^6.1.12",
     "react": "^18",
