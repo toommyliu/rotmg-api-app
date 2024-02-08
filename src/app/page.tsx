@@ -1,95 +1,77 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import {
+	SignInButton,
+	SignOutButton,
+	SignedIn,
+	SignedOut,
+} from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs";
+import type { OauthAccessToken } from "@clerk/nextjs/server";
 
-export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+const getOAuthToken = async (
+	user_id: string
+): Promise<OauthAccessToken[] | null> => {
+	return fetch(
+		`https://api.clerk.com/v1/users/${user_id}/oauth_access_tokens/oauth_discord`,
+		{
+			headers: {
+				Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+			},
+		}
+	).then((res) => {
+		if (!res.ok) {
+			return null;
+		}
+		return res.json() as Promise<OauthAccessToken[]>;
+	});
+};
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+export default async function Home() {
+	const session = auth();
+	const user = await currentUser();
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+	if (!user) {
+		return (
+			<SignedOut>
+				sign in before doing anything
+				<SignInButton />
+			</SignedOut>
+		);
+	}
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
+	const token = await getOAuthToken(user!.id);
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
+	if (token) {
+		const userId = user?.externalAccounts[0].externalId;
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+		await fetch(
+			`https://discord.com/api/v10/guilds/${process.env.DISCORD_GUILD_ID}/members/${userId}`,
+			{
+				method: "PUT",
+				headers: {
+					Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					access_token: token[0].token,
+				}),
+			}
+		)
+			.then((res) => {
+				if (res.status === 201) {
+					console.log("joined the guild!");
+				} else if (res.status === 204) {
+					console.log("already in the guild!");
+				}
+			})
+			.catch((error) => console.log(error));
+	}
+
+	return (
+		<>
+			<SignedIn>
+				hello! {user?.externalAccounts[0].username}
+				<SignOutButton />
+			</SignedIn>
+		</>
+	);
 }
