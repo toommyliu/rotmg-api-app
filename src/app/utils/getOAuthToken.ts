@@ -1,4 +1,4 @@
-import { OauthAccessToken } from "@clerk/nextjs/server";
+import type { OauthAccessToken } from "@clerk/nextjs/server";
 
 export async function getOAuthToken(userId: string) {
 	const url = `https://api.clerk.com/v1/users/${userId}/oauth_access_tokens/oauth_discord`;

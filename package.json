@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^4.29.6",
+    "@discordjs/rest": "^2.2.0",
     "@mantine/core": "^7.5.2",
     "@mantine/hooks": "^7.5.2",
     "chrono-node": "^2.7.5",
