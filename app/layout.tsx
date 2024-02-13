@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: any }) {
 			<body>
 				<ClerkProvider>
 					<MantineProvider>
-						<Notifications />
+						<Notifications position="top-right" />
 						{children}
 					</MantineProvider>
 				</ClerkProvider>
