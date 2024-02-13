@@ -1,3 +1,5 @@
+"use server";
+import "server-only";
 import type { OauthAccessToken } from "@clerk/nextjs/server";
 
 export async function getOAuthToken(userId: string) {

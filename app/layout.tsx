@@ -1,6 +1,8 @@
 import "@mantine/core/styles.css";
-import React from "react";
+import "@mantine/notifications/styles.css";
+
 import { MantineProvider, ColorSchemeScript } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 
@@ -21,7 +23,10 @@ export default function RootLayout({ children }: { children: any }) {
 			</head>
 			<body>
 				<ClerkProvider>
-					<MantineProvider>{children}</MantineProvider>
+					<MantineProvider>
+						<Notifications />
+						{children}
+					</MantineProvider>
 				</ClerkProvider>
 			</body>
 		</html>

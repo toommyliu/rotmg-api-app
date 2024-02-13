@@ -1,5 +1,5 @@
 import { parse } from "node-html-parser";
-import { headers, NOT_FOUND_STR } from "@/constants";
+import { headers, NOT_FOUND_STR } from "../../../lib/utils/constants";
 import { parseDate } from "chrono-node";
 
 // add missing key-values to indicate "hidden"
@@ -37,24 +37,35 @@ export async function GET(req: Request) {
 
 	const title = document.querySelector("title")?.rawText;
 
-	const found =
-		document.querySelector("body > div.container > div > div > h2")
-			?.rawText !== NOT_FOUND_STR;
-	if (!found) {
+	const container = document.querySelector("body > div.container");
+	if (!container) {
 		return Response.json({
 			error: "Not Found",
 			message: "Player not found",
 		});
 	}
 
-	const summary = document.querySelector(
-		"body > div.container > div > div > div.row > div.col-md-5 > table"
-	);
+	const h2 = container.querySelector("div > div > h2");
+	if (h2?.rawText === NOT_FOUND_STR) {
+		return Response.json({
+			error: "Not Found",
+			message: "Player not found",
+		});
+	}
+
+	// summary table
+	const tbl = container.querySelector("div > div > div.row > div.col-md-5 > table");
+	if (!tbl) {
+		return Response.json({
+			error: "Internal Server Error",
+			message: "Error parsing data",
+		});
+	}
 
 	// TODO: generate proper types
 	const obj: Record<string, string | number> = {};
 
-	const rows = summary?.querySelectorAll("tr");
+	const rows = tbl.querySelectorAll("tr");
 	rows?.forEach((row) => {
 		const cells = row.querySelectorAll("td");
 		if (cells.length == 2) {
