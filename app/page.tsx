@@ -23,14 +23,14 @@ export default function Page() {
 		);
 
 		switch (status) {
-			case "added":
+			case 201:
 				notifications.show({
 					color: "green",
 					title: "Success",
 					message: "Joined the guild!",
 				});
 				break;
-			case "ignored":
+			case 204:
 				notifications.show({
 					color: "yellow",
 					title: "Error",
@@ -41,7 +41,7 @@ export default function Page() {
 				notifications.show({
 					color: "red",
 					title: "Error",
-					message: "Something bad happened, internally.",
+					message: "Something bad happened trying to add you to the guild.",
 				});
 		}
 	};

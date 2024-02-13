@@ -15,17 +15,12 @@ export default async function joinGuild(userId: string, accessToken: string) {
 			}),
 		}
 	).then(res => {
-		if (res.status == 201) {
-			return 'added';
-		} else if (res.status == 204) {
-			return 'ignored';
-		} else {
+		if (!res.ok) {
 			console.log(res);
-			return 'bad';
 		}
+		return res.status;
 	}).catch((err) => {
 		const error = err as Error;
-		console.log(error);
-		return 'bad';
+		return 500;
 	})
 }
