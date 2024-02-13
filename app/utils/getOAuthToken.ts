@@ -2,7 +2,7 @@
 import "server-only";
 import type { OauthAccessToken } from "@clerk/nextjs/server";
 
-export async function getOAuthToken(userId: string) {
+export default async function getOauthToken(userId: string) {
 	const url = `https://api.clerk.com/v1/users/${userId}/oauth_access_tokens/oauth_discord`;
 	const headers = {
 		Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,

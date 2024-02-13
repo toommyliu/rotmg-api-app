@@ -10,7 +10,7 @@ import {
 } from "@clerk/nextjs";
 import { Button, Center, Group, Loader, Stack, Text } from "@mantine/core";
 import joinGuild from "./utils/joinGuild";
-import { getOAuthToken } from "./utils/getOAuthToken";
+import getOauthToken from "./utils/getOAuthToken";
 import { notifications } from "@mantine/notifications";
 
 export default function Page() {
@@ -19,8 +19,9 @@ export default function Page() {
 	const handleClick = async () => {
 		const status = await joinGuild(
 			user?.externalAccounts[0]?.providerUserId!,
-			(await getOAuthToken(user!.id))![0].token
+			(await getOauthToken(user!.id))![0].token
 		);
+
 		switch (status) {
 			case "added":
 				notifications.show({
