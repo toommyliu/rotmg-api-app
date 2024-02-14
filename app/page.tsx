@@ -10,7 +10,7 @@ import {
 } from "@clerk/nextjs";
 import { Button, Center, Group, Loader, Stack, Text } from "@mantine/core";
 import joinGuild from "./utils/joinGuild";
-import getOauthToken from "./utils/asdas";
+import getOauthToken from "./utils/getOauthToken";
 import { notifications } from "@mantine/notifications";
 
 export default function Page() {
