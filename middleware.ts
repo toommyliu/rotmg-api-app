@@ -1,7 +1,8 @@
 import { authMiddleware } from "@clerk/nextjs";
 
+// TODO: add auth for rest api
 export default authMiddleware({
-	publicRoutes: ["/"],
+	publicRoutes: ["/", "/api/(.*)"],
 });
 
 export const config = {
